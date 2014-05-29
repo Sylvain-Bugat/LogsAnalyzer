@@ -90,6 +90,13 @@ public class LogsAnalyzerConfiguration {
 		}
 	}
 
+	public void addNewUnknowGroup( final String newGroupName, final String log, final String fileName ) {
+
+		final LogsGroup newLogsGroup = new LogsGroup( newGroupName , log, fileName );
+		logsGroups.add( newLogsGroup );
+		logsSectionsMap.get( CONFIGURATION_DEFAULT_GROUP ).add( newLogsGroup );
+	}
+
 	public List<LogsGroup> getLogsGroups() {
 		return logsGroups;
 	}

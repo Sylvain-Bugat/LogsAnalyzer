@@ -16,11 +16,14 @@ import java.util.Map;
  */
 public class LogsAnalyzer {
 
+	/** Name of created unknown groups*/
 	private static final String NEW_GROUP_NAME = "Unknow group n°"; //$NON-NLS-1$
 
+	/**Configuration*/
 	private final LogsAnalyzerConfiguration logsAnalyzerConfiguration;
 
-	private int unknowGroupNumber;
+	/** Number of the next unkonw log group to create*/
+	private int unknowGroupNumber = 1;
 
 	public LogsAnalyzer( final String fileName ) throws ConfigurationException{
 
@@ -28,10 +31,11 @@ public class LogsAnalyzer {
 		logsAnalyzerConfiguration = new LogsAnalyzerConfiguration( fileName );
 	}
 
-	private void analyzeFile( final File logFile ) throws IOException {
+	private void analyzeFile( final File logFile ) {
 
 		try( final BufferedReader logReader = new BufferedReader( new FileReader( logFile ) ) ) {
 
+			//Loop on the file lines
 			String line = logReader.readLine();
 			while( null != line ){
 
@@ -39,7 +43,7 @@ public class LogsAnalyzer {
 
 				for ( final LogsGroup logsGrp : logsAnalyzerConfiguration.getLogsGroups() ) {
 
-					if( logsGrp.addLog( line, logsAnalyzerConfiguration.getDistance() ) ) {
+					if( logsGrp.addLog( line, logFile.getPath(), logsAnalyzerConfiguration.getDistance() ) ) {
 
 						groupFound = true;
 						break;
@@ -48,20 +52,28 @@ public class LogsAnalyzer {
 
 				if( ! groupFound ) {
 
-					//Create a new group of logs
-					final LogsGroup newLogsGroup = new LogsGroup( NEW_GROUP_NAME + unknowGroupNumber , line );
+					//Create a new group of logs, with this line as the first log
+					logsAnalyzerConfiguration.addNewUnknowGroup( NEW_GROUP_NAME + unknowGroupNumber, line, logFile.getPath() );
 					unknowGroupNumber ++;
-
-					logsAnalyzerConfiguration.getLogsGroups().add( newLogsGroup );
-					logsAnalyzerConfiguration.getLogsSectionsMap().get( LogsAnalyzerConfiguration.CONFIGURATION_DEFAULT_GROUP ).add( newLogsGroup );
 				}
 
 				line = logReader.readLine();
 			}
 		}
+		//Open or read error
+		catch( final IOException e ) {
+
+			System.out.println( "Error during " +  logFile.getPath() + " file analysis" + e );
+			e.printStackTrace();
+		}
 	}
 
-	private void analyzeEntryPoint( final File entryPointFile ) throws IOException {
+	/**
+	 * Analyze a file or a directory
+	 *
+	 * @param entryPointFile File or directory
+	 */
+	private void analyzeEntryPoint( final File entryPointFile ) {
 
 		if( ! entryPointFile.exists() ) {
 			return;
@@ -87,7 +99,12 @@ public class LogsAnalyzer {
 		}
 	}
 
-	public void analyze() throws IOException {
+	/**
+	 * Analyze files/directories main loop
+	 *
+	 * @throws IOException
+	 */
+	public void analyze() {
 
 		for( final String sourceFile : logsAnalyzerConfiguration.getSources() ) {
 
@@ -97,9 +114,10 @@ public class LogsAnalyzer {
 
 	public void print(){
 
+		//Print all section and logs
 		for( final Map.Entry<String,List< LogsGroup >> logsSection : logsAnalyzerConfiguration.getLogsSectionsMap().entrySet() ) {
 
-			System.out.println( "Section: [" + logsSection.getKey() + "]");
+			System.out.println( "[" + logsSection.getKey() + "]");
 
 			for( final LogsGroup logsGrp : logsSection.getValue() ) {
 
@@ -116,8 +134,9 @@ public class LogsAnalyzer {
 		}
 	}
 
-	public static void main( final String args[] ) throws IOException, ConfigurationException{
+	public static void main( final String args[] ) throws ConfigurationException{
 
+		//Load the configuration file, analyze logs files and directory and print logs groups
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$
 		logsAnalyzer.analyze();
 		logsAnalyzer.print();
