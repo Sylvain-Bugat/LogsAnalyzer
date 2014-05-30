@@ -43,7 +43,7 @@ public class LogsAnalyzer {
 
 				for ( final LogsGroup logsGrp : logsAnalyzerConfiguration.getLogsGroups() ) {
 
-					if( logsGrp.addLog( line, logFile.getPath(), logsAnalyzerConfiguration.getDistance() ) ) {
+					if( logsGrp.compareAndAddLog( line, logFile.getPath(), logsAnalyzerConfiguration.getDistance() ) ) {
 
 						groupFound = true;
 						break;
@@ -112,6 +112,33 @@ public class LogsAnalyzer {
 		}
 	}
 
+	public void postAnalyze() {
+
+		for( final LogsGroup logsGroup : logsAnalyzerConfiguration.getLogsGroups() ) {
+
+			if( logsGroup.isUnkown() ) {
+
+				int closestDistance = Integer.MAX_VALUE;
+
+				for( final LogsGroup configuredlogsGroup : logsAnalyzerConfiguration.getLogsGroups() ) {
+
+					if( ! configuredlogsGroup.isUnkown() ) {
+
+						System.out.println( logsGroup.groupName + " " + configuredlogsGroup.groupName );
+
+						final int distance = configuredlogsGroup.getDistance( logsGroup );
+
+						if( distance < closestDistance ) {
+
+							closestDistance = distance;
+							logsGroup.setNearestLogsGroup( configuredlogsGroup );
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void print(){
 
 		//Print all section and logs
@@ -127,6 +154,12 @@ public class LogsAnalyzer {
 
 					System.out.println( logs );
 					System.out.println();
+
+					if( null != logsGrp.getNearestLogsGroup() ) {
+
+						System.out.println( "\tConfigured candidate group: " + logsGrp.getNearestLogsGroup().groupName + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						System.out.println();
+					}
 				}
 			}
 
@@ -139,6 +172,7 @@ public class LogsAnalyzer {
 		//Load the configuration file, analyze logs files and directory and print logs groups
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$
 		logsAnalyzer.analyze();
+		logsAnalyzer.postAnalyze();
 		logsAnalyzer.print();
 	}
 
