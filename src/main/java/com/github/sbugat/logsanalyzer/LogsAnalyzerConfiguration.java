@@ -33,6 +33,15 @@ public class LogsAnalyzerConfiguration {
 
 	private List<String> sources = new ArrayList<>();
 
+	public LogsAnalyzerConfiguration() {
+
+		distance = DISTANCE_DEFAULT_VALUE;
+		sources.add( SOURCE_DEFAULT_VALUE );
+
+		//Default configuration group for unknown logs found
+		logsSectionsMap.put( CONFIGURATION_DEFAULT_GROUP, new ArrayList<LogsGroup>() );
+	}
+
 	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws ConfigurationException {
 
 		//Load the configuration from the INI format configuration file

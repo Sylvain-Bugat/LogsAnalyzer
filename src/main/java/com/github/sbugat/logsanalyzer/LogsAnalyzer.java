@@ -25,12 +25,32 @@ public class LogsAnalyzer {
 	/** Number of the next unkonw log group to create*/
 	private int unknowGroupNumber = 1;
 
-	public LogsAnalyzer( final String fileName ) throws ConfigurationException{
+	/**
+	 * Initialize with the default configuration
+	 */
+	public LogsAnalyzer() {
 
 		//Loading configuration
-		logsAnalyzerConfiguration = new LogsAnalyzerConfiguration( fileName );
+		logsAnalyzerConfiguration = new LogsAnalyzerConfiguration();
 	}
 
+	/**
+	 * Initialize and load the configuration file
+	 *
+	 * @param iniConfigurationFileName name of the ini type configuration file
+	 * @throws ConfigurationException when parsing of the ine file exception accur
+	 */
+	public LogsAnalyzer( final String iniConfigurationFileName ) throws ConfigurationException{
+
+		//Loading configuration
+		logsAnalyzerConfiguration = new LogsAnalyzerConfiguration( iniConfigurationFileName );
+	}
+
+	/**
+	 * Open and analyze a file, each line is compared with configured and existing log groups
+	 *
+	 * @param logFile file to analyze
+	 */
 	private void analyzeFile( final File logFile ) {
 
 		try( final BufferedReader logReader = new BufferedReader( new FileReader( logFile ) ) ) {
@@ -41,6 +61,7 @@ public class LogsAnalyzer {
 
 				boolean groupFound = false;
 
+				//Find the first configured group that is close enough to the line
 				for ( final LogsGroup logsGrp : logsAnalyzerConfiguration.getLogsGroups() ) {
 
 					if( logsGrp.compareAndAddLog( line, logFile.getPath(), logsAnalyzerConfiguration.getDistance() ) ) {
@@ -50,6 +71,7 @@ public class LogsAnalyzer {
 					}
 				}
 
+				//If none was found, create a new one
 				if( ! groupFound ) {
 
 					//Create a new group of logs, with this line as the first log
@@ -63,7 +85,7 @@ public class LogsAnalyzer {
 		//Open or read error
 		catch( final IOException e ) {
 
-			System.out.println( "Error during " +  logFile.getPath() + " file analysis" + e );
+			System.out.println( "Error during " +  logFile.getPath() + " file analysis: " + e );
 			e.printStackTrace();
 		}
 	}
@@ -112,6 +134,10 @@ public class LogsAnalyzer {
 		}
 	}
 
+	/**
+	 * Find the nearest logs group to each unkown group
+	 * it helps to set the correct distance for a log analysis
+	 */
 	public void postAnalyze() {
 
 		for( final LogsGroup logsGroup : logsAnalyzerConfiguration.getLogsGroups() ) {
@@ -120,11 +146,12 @@ public class LogsAnalyzer {
 
 				int closestDistance = Integer.MAX_VALUE;
 
+				//Find the nearest group, it can be very far
 				for( final LogsGroup configuredlogsGroup : logsAnalyzerConfiguration.getLogsGroups() ) {
 
-					if( ! configuredlogsGroup.isUnkown() ) {
+					if( logsGroup != configuredlogsGroup ) {
 
-						final int distance = configuredlogsGroup.getDistance( logsGroup );
+						final int distance = configuredlogsGroup.getDistanceWith( logsGroup );
 
 						if( distance < closestDistance ) {
 
@@ -138,6 +165,9 @@ public class LogsAnalyzer {
 		}
 	}
 
+	/**
+	 * Print the result to the standard output
+	 */
 	public void print(){
 
 		//Print all section and logs
@@ -154,9 +184,10 @@ public class LogsAnalyzer {
 					System.out.println( logs );
 					System.out.println();
 
+					//Print one line about the nearest logs group if it exists
 					if( null != logsGrp.getNearestLogsGroup() ) {
 
-						System.out.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().groupName + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						System.out.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
 						System.out.println();
 					}
 				}

@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LogsGroup {
 
 	/**Alias name for display*/
-	public final String groupName;
+	private final String groupName;
 
 	/**Example of a log of this group */
 	private final String sampleLog;
@@ -57,7 +57,7 @@ public class LogsGroup {
 		sampleLog = newLogArg;
 		unkown = true;
 
-		logs.add( fileName + "> " + newLogArg );
+		addLog( newLogArg, fileName );
 	}
 
 	/**
@@ -72,16 +72,32 @@ public class LogsGroup {
 
 		if( -1 != StringUtils.getLevenshteinDistance( log, sampleLog, maxDistance ) ) {
 
-			logs.add( fileName + "> " + log );
+			addLog( log, fileName );
 			return true;
 		}
 
 		return false;
 	}
 
-	public int getDistance( final LogsGroup otherGroup ){
+	/**
+	 * Compare another sample log with the current sample log and return the Levenshtein distance
+	 *
+	 * @param otherGroup other group to compare with
+	 * @return Levenshtein distance between these groups
+	 */
+	public int getDistanceWith( final LogsGroup otherGroup ){
 
 		return StringUtils.getLevenshteinDistance( otherGroup.sampleLog, sampleLog );
+	}
+
+	/**
+	 * Add a log the logs list with the filename as prefix
+	 *
+	 * @param log
+	 * @param fileName
+	 */
+	private void addLog( final String log, final String fileName ){
+		logs.add( fileName + "> " + log );
 	}
 
 
@@ -110,6 +126,10 @@ public class LogsGroup {
 		}
 
 		return stringBuilder.toString();
+	}
+
+	public String getGroupName() {
+		return groupName;
 	}
 
 	public String getSampleLog() {
