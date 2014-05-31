@@ -124,14 +124,13 @@ public class LogsAnalyzer {
 
 					if( ! configuredlogsGroup.isUnkown() ) {
 
-						System.out.println( logsGroup.groupName + " " + configuredlogsGroup.groupName );
-
 						final int distance = configuredlogsGroup.getDistance( logsGroup );
 
 						if( distance < closestDistance ) {
 
 							closestDistance = distance;
 							logsGroup.setNearestLogsGroup( configuredlogsGroup );
+							logsGroup.setClosestDistance( distance );
 						}
 					}
 				}
@@ -157,7 +156,7 @@ public class LogsAnalyzer {
 
 					if( null != logsGrp.getNearestLogsGroup() ) {
 
-						System.out.println( "\tConfigured candidate group: " + logsGrp.getNearestLogsGroup().groupName + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						System.out.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().groupName + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
 						System.out.println();
 					}
 				}
