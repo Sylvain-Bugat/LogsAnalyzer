@@ -11,18 +11,23 @@ import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
 /**
- *
+ * Configuration loading and logs container class
  *
  * @author Sylvain Bugat
  *
  */
 public class LogsAnalyzerConfiguration {
 
+	/**Default section containing unknown logs group*/
 	static final String CONFIGURATION_DEFAULT_GROUP = "UNKNOWN"; //$NON-NLS-1$
 
+	/**Section containing config parameters and input files/directories*/
 	private static final String CONFIGURATION_SECTION = "CONFIG"; //$NON-NLS-1$
+	/**Parameter containing the distance*/
 	private static final String CONFIGURATION_DISTANCE = "distance"; //$NON-NLS-1$
+	/**Default distance used if none is found*/
 	private static final int DISTANCE_DEFAULT_VALUE = 20;
+	/**Default file/dir source used if none is found */
 	private static final String SOURCE_DEFAULT_VALUE = "logs"; //$NON-NLS-1$
 
 	private final List<LogsGroup> logsGroups = new ArrayList<>();
@@ -33,6 +38,10 @@ public class LogsAnalyzerConfiguration {
 
 	private List<String> sources = new ArrayList<>();
 
+	/**
+	 * Default configuration loading if no ini configuration file is used
+	 * Load all default parameters
+	 */
 	public LogsAnalyzerConfiguration() {
 
 		distance = DISTANCE_DEFAULT_VALUE;
@@ -42,6 +51,12 @@ public class LogsAnalyzerConfiguration {
 		logsSectionsMap.put( CONFIGURATION_DEFAULT_GROUP, new ArrayList<LogsGroup>() );
 	}
 
+	/**
+	 * Initialize and load the configuration based on an ini file
+	 *
+	 * @param configurationIniFileName name of the ini configuration file to load
+	 * @throws ConfigurationException if parsing error occurs when the ini file is loaded
+	 */
 	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws ConfigurationException {
 
 		//Load the configuration from the INI format configuration file
@@ -99,6 +114,13 @@ public class LogsAnalyzerConfiguration {
 		}
 	}
 
+	/**
+	 * Add a new unknown group to the unknown default section with an initial log
+	 *
+	 * @param newGroupName name of the new unknown group
+	 * @param log first log and sample log of the group
+	 * @param fileName filename where the first log was read
+	 */
 	public void addNewUnknowGroup( final String newGroupName, final String log, final String fileName ) {
 
 		final LogsGroup newLogsGroup = new LogsGroup( newGroupName , log, fileName );
