@@ -20,18 +20,20 @@ Edit the sample configuration file `logs-analyzer.ini` in the `\` directory and 
 Maximum distance between 2 logs of a group, example with a configuration of 40: `distance=40`
 
 All other parameters are files and/or directories input with any parameter name
-	parameter=\<file/directory\>
+	parameter name=\<file/directory\>
 
-## Additionnal Configuration
+## Known logs Configuration
 
 Multiples sections in the `logs-analyzer.ini` file can also be defined with logs definitions:
 
 	log name=log sample line
 
+Logs are compared in the same order of the configuration.
+
 ***
 
 ## Launch LogsAnalyzer
 
-Just execute the main class called `LogsAnalyzer`.
+Just execute the main class called `LogsAnalyzer` with `logs-analyzer.ini` file in the launch directory.
 
 
