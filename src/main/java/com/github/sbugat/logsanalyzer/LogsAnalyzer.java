@@ -1,10 +1,13 @@
 package com.github.sbugat.logsanalyzer;
 
 import org.apache.commons.configuration.ConfigurationException;
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -168,12 +171,12 @@ public class LogsAnalyzer {
 	/**
 	 * Print the result to the standard output
 	 */
-	public void print(){
+	public void print( final PrintWriter printWriter ){
 
 		//Print all section and logs
 		for( final Map.Entry<String,List< LogsGroup >> logsSection : logsAnalyzerConfiguration.getLogsSectionsMap().entrySet() ) {
 
-			System.out.println( "[" + logsSection.getKey() + "]");
+			printWriter.println( "[" + logsSection.getKey() + "]");
 
 			for( final LogsGroup logsGrp : logsSection.getValue() ) {
 
@@ -181,29 +184,29 @@ public class LogsAnalyzer {
 
 				if( ! logs.isEmpty() ) {
 
-					System.out.println( logs );
-					System.out.println();
+					printWriter.println( logs );
+					printWriter.println();
 
 					//Print one line about the nearest logs group if it exists
 					if( null != logsGrp.getNearestLogsGroup() ) {
 
-						System.out.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
-						System.out.println();
+						printWriter.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						printWriter.println();
 					}
 				}
 			}
 
-			System.out.println();
+			printWriter.println();
 		}
 	}
 
-	public static void main( final String args[] ) throws ConfigurationException{
+	public static void main( final String args[] ) throws ConfigurationException, FileNotFoundException{
 
 		//Load the configuration file, analyze logs files and directory and print logs groups
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$
 		logsAnalyzer.analyze();
 		logsAnalyzer.postAnalyze();
-		logsAnalyzer.print();
+		logsAnalyzer.print( new PrintWriter( "logs-analyzer.out" ) );
 	}
 
 }
