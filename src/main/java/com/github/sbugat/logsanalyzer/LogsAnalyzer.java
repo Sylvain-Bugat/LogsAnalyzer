@@ -198,6 +198,8 @@ public class LogsAnalyzer {
 
 			printWriter.println();
 		}
+
+		printWriter.flush();
 	}
 
 	public static void main( final String args[] ) throws ConfigurationException, FileNotFoundException{
