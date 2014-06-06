@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
@@ -171,12 +171,12 @@ public class LogsAnalyzer {
 	/**
 	 * Print the result to the standard output
 	 */
-	public void print( final PrintWriter printWriter ){
+	public void print( final PrintStream printStream ){
 
 		//Print all section and logs
 		for( final Map.Entry<String,List< LogsGroup >> logsSection : logsAnalyzerConfiguration.getLogsSectionsMap().entrySet() ) {
 
-			printWriter.println( "[" + logsSection.getKey() + "]");
+			printStream.println( "[" + logsSection.getKey() + "]");
 
 			for( final LogsGroup logsGrp : logsSection.getValue() ) {
 
@@ -184,22 +184,22 @@ public class LogsAnalyzer {
 
 				if( ! logs.isEmpty() ) {
 
-					printWriter.println( logs );
-					printWriter.println();
+					printStream.println( logs );
+					printStream.println();
 
 					//Print one line about the nearest logs group if it exists
 					if( null != logsGrp.getNearestLogsGroup() ) {
 
-						printWriter.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
-						printWriter.println();
+						printStream.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						printStream.println();
 					}
 				}
 			}
 
-			printWriter.println();
+			printStream.println();
 		}
 
-		printWriter.flush();
+		printStream.flush();
 	}
 
 	public static void main( final String args[] ) throws ConfigurationException, FileNotFoundException{
@@ -208,7 +208,12 @@ public class LogsAnalyzer {
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$
 		logsAnalyzer.analyze();
 		logsAnalyzer.postAnalyze();
-		logsAnalyzer.print( new PrintWriter( "logs-analyzer.out" ) );
+		if( 1 == args.length ) {
+			logsAnalyzer.print( new PrintStream( args[ 0 ] ) );
+		}
+		else {
+			logsAnalyzer.print( System.out );
+		}
 	}
 
 }
