@@ -73,8 +73,6 @@ public class LogsAnalyzerConfiguration {
 			//Configuration section
 			if( CONFIGURATION_SECTION.equals( section ) ) {
 
-				distance = DISTANCE_DEFAULT_VALUE;
-
 				for( final Entry<String, String> sectionEntry : iniConfigurationSection.getEntries() ) {
 
 					//Load the distance parameter

@@ -23,8 +23,8 @@ public class LogsAnalyzer {
 	/** Default output file if none is provided*/
 	private static final String DEFAULT_OUTPUT_FILE_NAME = "logs-analyzer.out"; //$NON-NLS-1$
 
-	/** Argument to indicate to print to the output stream*/
-	private static final String PRINT_TO_STANDARD_OUTPUT = "-"; //$NON-NLS-1$
+	/** Argument to indicate to print to the default standard output*/
+	private static final String PRINT_TO_DEFAULT_STANDARD_OUTPUT = "-"; //$NON-NLS-1$
 
 	/**Configuration*/
 	private final LogsAnalyzerConfiguration logsAnalyzerConfiguration;
@@ -227,7 +227,7 @@ public class LogsAnalyzer {
 			System.setErr( new PrintStream( DEFAULT_OUTPUT_FILE_NAME ) );
 		}
 		//Write to the argument file name
-		else if( ! PRINT_TO_STANDARD_OUTPUT.equals( args[ 0 ] ) ) {
+		else if( ! PRINT_TO_DEFAULT_STANDARD_OUTPUT.equals( args[ 0 ] ) ) {
 			System.setOut( new PrintStream( args[ 0 ] ) );
 			System.setErr( new PrintStream( args[ 0 ] ) );
 		}
