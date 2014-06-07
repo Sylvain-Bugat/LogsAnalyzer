@@ -1,7 +1,5 @@
 package com.github.sbugat.logsanalyzer;
 
-import org.apache.commons.configuration.ConfigurationException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,9 +39,10 @@ public class LogsAnalyzer {
 	 * Initialize and load the configuration file
 	 *
 	 * @param iniConfigurationFileName name of the ini type configuration file
-	 * @throws ConfigurationException when parsing of the ine file exception accur
+	 * @throws IOException when parsing of the ine file exception occur
+	 * @throws FileNotFoundException when parsing of the ine file exception occur
 	 */
-	public LogsAnalyzer( final String iniConfigurationFileName ) throws ConfigurationException{
+	public LogsAnalyzer( final String iniConfigurationFileName ) throws FileNotFoundException, IOException{
 
 		//Loading configuration
 		logsAnalyzerConfiguration = new LogsAnalyzerConfiguration( iniConfigurationFileName );
@@ -202,7 +201,7 @@ public class LogsAnalyzer {
 		printStream.flush();
 	}
 
-	public static void main( final String args[] ) throws ConfigurationException, FileNotFoundException{
+	public static void main( final String args[] ) throws IOException{
 
 		//Load the configuration file, analyze logs files and directory and print logs groups
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$

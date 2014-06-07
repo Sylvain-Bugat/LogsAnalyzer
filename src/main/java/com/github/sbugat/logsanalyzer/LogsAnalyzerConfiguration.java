@@ -1,14 +1,14 @@
 package com.github.sbugat.logsanalyzer;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalINIConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
+import com.github.sbugat.logsanalyzer.IniConfigurationFileLoader.IniConfigurationSection;
 
 /**
  * Configuration loading and logs container class
@@ -55,37 +55,35 @@ public class LogsAnalyzerConfiguration {
 	 * Initialize and load the configuration based on an ini file
 	 *
 	 * @param configurationIniFileName name of the ini configuration file to load
-	 * @throws ConfigurationException if parsing error occurs when the ini file is loaded
+	 * @throws IOException if parsing error occurs when the ini file is loaded
+	 * @throws FileNotFoundException if parsing error occurs when the ini file is loaded
 	 */
-	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws ConfigurationException {
+	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws FileNotFoundException, IOException {
 
 		//Load the configuration from the INI format configuration file
-		final HierarchicalINIConfiguration hierarchicalINIConfigurationnew = new HierarchicalINIConfiguration( configurationIniFileName );
+		final IniConfigurationFileLoader iniConfigurationFileLoader = new IniConfigurationFileLoader( configurationIniFileName );
 
 		//Default configuration group for unknown logs found
 		logsSectionsMap.put( CONFIGURATION_DEFAULT_GROUP, new ArrayList<LogsGroup>() );
 
-		for( final String section : hierarchicalINIConfigurationnew.getSections() ) {
+		for( final String section : iniConfigurationFileLoader.getSections() ) {
 
-			final SubnodeConfiguration subnodeConfiguration = hierarchicalINIConfigurationnew.getSection( section );
+			final IniConfigurationSection iniConfigurationSection = iniConfigurationFileLoader.getSection( section );
 
 			//Configuration section
 			if( CONFIGURATION_SECTION.equals( section ) ) {
 
-				distance = subnodeConfiguration.getInt( CONFIGURATION_DISTANCE, DISTANCE_DEFAULT_VALUE );
+				distance = DISTANCE_DEFAULT_VALUE;
 
-				final Iterator<String> iterator = subnodeConfiguration.getKeys();
-				while( iterator.hasNext() ) {
-
-					final String keyName = iterator.next();
+				for( final Entry<String, String> sectionEntry : iniConfigurationSection.getEntries() ) {
 
 					//Load the distance parameter
-					if( CONFIGURATION_DISTANCE.equals( keyName ) ) {
-						distance = subnodeConfiguration.getInt( keyName, DISTANCE_DEFAULT_VALUE );
+					if( CONFIGURATION_DISTANCE.equals( sectionEntry.getKey() ) ) {
+						distance = Integer.parseInt( sectionEntry.getValue() );
 					}
 					//Everything else is a source file or a source dir
 					else {
-						sources.add( subnodeConfiguration.getString( keyName ) );
+						sources.add( sectionEntry.getValue() );
 					}
 				}
 			}
@@ -94,11 +92,9 @@ public class LogsAnalyzerConfiguration {
 
 				final List<LogsGroup> groupsList = new ArrayList<>();
 
-				final Iterator<String> iterator = subnodeConfiguration.getKeys();
-				while( iterator.hasNext() ) {
+				for( final Entry<String, String> sectionEntry : iniConfigurationSection.getEntries() ) {
 
-					final String logName = iterator.next();
-					final LogsGroup logsGroup = new LogsGroup( logName, subnodeConfiguration.getString( logName ) );
+					final LogsGroup logsGroup = new LogsGroup( sectionEntry.getKey(), sectionEntry.getValue() );
 					groupsList.add( logsGroup );
 					logsGroups.add( logsGroup );
 				}

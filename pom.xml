@@ -23,7 +23,6 @@
 
 		<!-- Apache commons Version -->
 		<commons.lang3.version>3.3.2</commons.lang3.version>
-		<commons.configuration.version>1.10</commons.configuration.version>
 
 		<!-- Maven Lifecycle Plugins Version -->
 		<maven.pluginclean.version>2.5</maven.pluginclean.version>
@@ -43,11 +42,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons.lang3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>${commons.configuration.version}</version>
 		</dependency>
 	</dependencies>
 
