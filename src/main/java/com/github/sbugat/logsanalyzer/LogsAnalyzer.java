@@ -20,6 +20,12 @@ public class LogsAnalyzer {
 	/** Name of created unknown groups*/
 	private static final String NEW_GROUP_NAME = "Unknow group n°"; //$NON-NLS-1$
 
+	/** Default output file if none is provided*/
+	private static final String DEFAULT_OUTPUT_FILE_NAME = "logs-analyzer.out"; //$NON-NLS-1$
+
+	/** Argument to indicate to print to the output stream*/
+	private static final String PRINT_TO_STANDARD_OUTPUT = "-"; //$NON-NLS-1$
+
 	/**Configuration*/
 	private final LogsAnalyzerConfiguration logsAnalyzerConfiguration;
 
@@ -170,12 +176,12 @@ public class LogsAnalyzer {
 	/**
 	 * Print the result to the standard output
 	 */
-	public void print( final PrintStream printStream ){
+	public void print(){
 
 		//Print all section and logs
 		for( final Map.Entry<String,List< LogsGroup >> logsSection : logsAnalyzerConfiguration.getLogsSectionsMap().entrySet() ) {
 
-			printStream.println( "[" + logsSection.getKey() + "]");
+			System.out.println( "[" + logsSection.getKey() + "]");
 
 			for( final LogsGroup logsGrp : logsSection.getValue() ) {
 
@@ -183,36 +189,54 @@ public class LogsAnalyzer {
 
 				if( ! logs.isEmpty() ) {
 
-					printStream.println( logs );
-					printStream.println();
+					System.out.println( logs );
+					System.out.println();
 
 					//Print one line about the nearest logs group if it exists
 					if( null != logsGrp.getNearestLogsGroup() ) {
 
-						printStream.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
-						printStream.println();
+						System.out.println( "\tConfigured candidate group (distance: " + logsGrp.getClosestDistance() + ") : " + logsGrp.getNearestLogsGroup().getGroupName() + " ( " + logsGrp.getNearestLogsGroup().getSampleLog() + " ) " );
+						System.out.println();
 					}
 				}
 			}
 
-			printStream.println();
+			System.out.println();
 		}
 
-		printStream.flush();
+		System.out.flush();
 	}
 
+	/**
+	 * Main program launched in the jar file
+	 *
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main( final String args[] ) throws IOException{
+
+		//Arguments checking
+		if( args.length > 1 ) {
+
+			System.exit( 1 );
+		}
+
+		//If none is provided, write to a default file
+		if( 0 == args.length  ) {
+			System.setOut( new PrintStream( DEFAULT_OUTPUT_FILE_NAME ) );
+			System.setErr( new PrintStream( DEFAULT_OUTPUT_FILE_NAME ) );
+		}
+		//Write to the argument file name
+		else if( ! PRINT_TO_STANDARD_OUTPUT.equals( args[ 0 ] ) ) {
+			System.setOut( new PrintStream( args[ 0 ] ) );
+			System.setErr( new PrintStream( args[ 0 ] ) );
+		}
+		//If the argument is "-" write to the standard output
 
 		//Load the configuration file, analyze logs files and directory and print logs groups
 		final LogsAnalyzer logsAnalyzer = new LogsAnalyzer( "logs-analyzer.ini" ); //$NON-NLS-1$
 		logsAnalyzer.analyze();
 		logsAnalyzer.postAnalyze();
-		if( 1 == args.length ) {
-			logsAnalyzer.print( new PrintStream( args[ 0 ] ) );
-		}
-		else {
-			logsAnalyzer.print( System.out );
-		}
+		logsAnalyzer.print();
 	}
-
 }
