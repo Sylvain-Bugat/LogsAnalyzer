@@ -1,6 +1,5 @@
 package com.github.sbugat.logsanalyzer;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -56,9 +55,8 @@ public class LogsAnalyzerConfiguration {
 	 *
 	 * @param configurationIniFileName name of the ini configuration file to load
 	 * @throws IOException if parsing error occurs when the ini file is loaded
-	 * @throws FileNotFoundException if parsing error occurs when the ini file is loaded
 	 */
-	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws FileNotFoundException, IOException {
+	public LogsAnalyzerConfiguration( final String configurationIniFileName ) throws IOException {
 
 		//Load the configuration from the INI format configuration file
 		final IniConfigurationFileLoader iniConfigurationFileLoader = new IniConfigurationFileLoader( configurationIniFileName );
