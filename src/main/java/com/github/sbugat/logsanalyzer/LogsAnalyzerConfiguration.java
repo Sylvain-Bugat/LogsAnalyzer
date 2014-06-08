@@ -18,7 +18,7 @@ import com.github.sbugat.logsanalyzer.IniConfigurationFileLoader.IniConfiguratio
 public class LogsAnalyzerConfiguration {
 
 	/**Default section containing unknown logs group*/
-	static final String CONFIGURATION_DEFAULT_GROUP = "UNKNOWN"; //$NON-NLS-1$
+	private static final String CONFIGURATION_DEFAULT_GROUP = "UNKNOWN"; //$NON-NLS-1$
 
 	/**Section containing config parameters and input files/directories*/
 	private static final String CONFIGURATION_SECTION = "CONFIG"; //$NON-NLS-1$
@@ -35,7 +35,7 @@ public class LogsAnalyzerConfiguration {
 
 	private int distance = DISTANCE_DEFAULT_VALUE;
 
-	private List<String> sources = new ArrayList<>();
+	private final List<String> sources = new ArrayList<>();
 
 	/**
 	 * Default configuration loading if no ini configuration file is used
@@ -43,7 +43,6 @@ public class LogsAnalyzerConfiguration {
 	 */
 	public LogsAnalyzerConfiguration() {
 
-		distance = DISTANCE_DEFAULT_VALUE;
 		sources.add( SOURCE_DEFAULT_VALUE );
 
 		//Default configuration group for unknown logs found
