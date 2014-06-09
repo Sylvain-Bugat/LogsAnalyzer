@@ -19,10 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 public class IniConfigurationFileLoader {
 
 	/**Comment line comment marker*/
-	private static final String INI_CONFIGURATION_FILE_COMMENT = "#";
+	private static final String INI_CONFIGURATION_FILE_COMMENT = "#"; //$NON-NLS-1$
 
 	/**Separator character between the parameter and the value*/
 	private static final char PARAMETER_VALUE_SEPARATOR = '=';
+
+	/**For parameters before the first section*/
+	private static final String INI_CONFIGURATION_NO_SECTION = "NO SECTION"; //$NON-NLS-1$
 
 	/**Loaded sections Map*/
 	private final Map<String, IniConfigurationSection> sections = new LinkedHashMap<>();
@@ -38,7 +41,9 @@ public class IniConfigurationFileLoader {
 
 		try( final BufferedReader logReader = new BufferedReader( new FileReader( iniConfigurationFileName ) ) ) {
 
-			String currentSection = null;
+			//Initialize the no section parameters, if there are some before the first section
+			String currentSection = INI_CONFIGURATION_NO_SECTION;
+			sections.put( currentSection, new IniConfigurationSection() );
 
 			//Loop on the file lines
 			String line = logReader.readLine();
@@ -49,11 +54,11 @@ public class IniConfigurationFileLoader {
 				//Skip line staring with #
 				if( ! line.startsWith( INI_CONFIGURATION_FILE_COMMENT ) ) {
 
-					if( line.startsWith( "[" ) ) {
+					if( line.startsWith( "[" ) ) { //$NON-NLS-1$
 
 						currentSection = addNewSection( line );
 					}
-					else if( ! line.isEmpty() && null != currentSection ) {
+					else if( ! line.isEmpty() ) {
 
 						addNewParameter( line, currentSection );
 					}
@@ -66,7 +71,7 @@ public class IniConfigurationFileLoader {
 
 	private String addNewSection( final String line ) {
 
-		final String sectionName = line.replaceFirst( "^\\[", StringUtils.EMPTY ).replaceFirst( "\\]$", StringUtils.EMPTY );
+		final String sectionName = line.replaceFirst( "^\\[", StringUtils.EMPTY ).replaceFirst( "\\]$", StringUtils.EMPTY ); //$NON-NLS-1$ //$NON-NLS-2$
 		sections.put( sectionName, new IniConfigurationSection() );
 		return sectionName;
 	}
@@ -92,7 +97,7 @@ public class IniConfigurationFileLoader {
 			iniConfigurationSection.parameters.put( parameter, value );
 		}
 		else {
-			System.err.println( "Section:[" + currentSection + "]: invalid parameter line:" + line );
+			System.err.println( "Section:[" + currentSection + "]: invalid parameter line:" + line ); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
