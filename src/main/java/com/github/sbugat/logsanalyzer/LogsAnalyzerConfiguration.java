@@ -29,12 +29,14 @@ public class LogsAnalyzerConfiguration {
 	/**Default file/dir source used if none is found */
 	private static final String SOURCE_DEFAULT_VALUE = "logs"; //$NON-NLS-1$
 
+	/**List of all logs definition loaded and found*/
 	private final List<LogsGroup> logsGroups = new ArrayList<>();
-
+	/**Map of all loaded section in the read order*/
 	private final Map<String,List<LogsGroup>> logsSectionsMap = new LinkedHashMap<>();
 
+	/**Configured Levenshtein distance*/
 	private int distance = DISTANCE_DEFAULT_VALUE;
-
+	/**List of sources files/directories to read*/
 	private final List<String> sources = new ArrayList<>();
 
 	/**
