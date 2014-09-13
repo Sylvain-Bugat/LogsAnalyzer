@@ -1,11 +1,12 @@
 package com.github.sbugat.logsanalyzer;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -59,20 +60,20 @@ public class LogsAnalyzer {
 	 *
 	 * @param logFile file to analyze
 	 */
-	private void analyzeFile( final File logFile ) {
+	private void analyzeFile( final Path logFile ) {
 
-		try( final BufferedReader logReader = new BufferedReader( new FileReader( logFile ) ) ) {
+		try {
 
+			final List<String> lines = Files.readAllLines( logFile, StandardCharsets.UTF_8 );
 			//Loop on the file lines
-			String line = logReader.readLine();
-			while( null != line ){
+			for( String line : lines ) {
 
 				boolean groupFound = false;
 
 				//Find the first configured group that is close enough to the line
 				for ( final LogsGroup logsGrp : logsAnalyzerConfiguration.getLogsGroups() ) {
 
-					if( logsGrp.compareAndAddLog( line, logFile.getPath(), logsAnalyzerConfiguration.getDistance() ) ) {
+					if( logsGrp.compareAndAddLog( line, logFile, logsAnalyzerConfiguration.getDistance() ) ) {
 
 						groupFound = true;
 						break;
@@ -83,17 +84,15 @@ public class LogsAnalyzer {
 				if( ! groupFound ) {
 
 					//Create a new group of logs, with this line as the first log
-					logsAnalyzerConfiguration.addNewUnknowGroup( NEW_GROUP_NAME + unknowGroupNumber, line, logFile.getPath() );
+					logsAnalyzerConfiguration.addNewUnknowGroup( NEW_GROUP_NAME + unknowGroupNumber, line, logFile );
 					unknowGroupNumber ++;
 				}
-
-				line = logReader.readLine();
 			}
 		}
 		//Open or read error
 		catch( final IOException e ) {
 
-			System.out.println( "Error during " +  logFile.getPath() + " file analysis: " + e );
+			System.out.println( "Error during " +  logFile + " file analysis: " + e );
 			e.printStackTrace();
 		}
 	}
@@ -102,28 +101,29 @@ public class LogsAnalyzer {
 	 * Analyze a file or a directory
 	 *
 	 * @param entryPointFile File or directory
+	 * @throws IOException
 	 */
-	private void analyzeEntryPoint( final File entryPointFile ) {
+	private void analyzeEntryPoint( final Path entryPointPath ) throws IOException {
 
-		if( ! entryPointFile.exists() ) {
+		if( ! Files.exists( entryPointPath ) ) {
 			return;
 		}
 
-		if( entryPointFile.isFile() ) {
+		if( Files.isRegularFile( entryPointPath ) ) {
 
-			analyzeFile( entryPointFile );
+			analyzeFile( entryPointPath );
 		}
-		else if( entryPointFile.isDirectory() ) {
+		else if( Files.isDirectory( entryPointPath ) ) {
 
-			for( final File file : entryPointFile.listFiles() ) {
+			for( final Path path : Files.newDirectoryStream( entryPointPath ) ) {
 
-				if( file.isDirectory() ) {
+				if( Files.isDirectory( path ) ) {
 
-					analyzeEntryPoint( file );
+					analyzeEntryPoint( path );
 				}
-				else if( file.isFile() ) {
+				else if( Files.isRegularFile( path ) ) {
 
-					analyzeFile( file );
+					analyzeFile( path );
 				}
 			}
 		}
@@ -131,14 +131,13 @@ public class LogsAnalyzer {
 
 	/**
 	 * Analyze files/directories main loop
-	 *
 	 * @throws IOException
 	 */
-	public void analyze() {
+	public void analyze() throws IOException {
 
 		for( final String sourceFile : logsAnalyzerConfiguration.getSources() ) {
 
-			analyzeEntryPoint( new File( sourceFile) );
+			analyzeEntryPoint( Paths.get( sourceFile ) );
 		}
 	}
 

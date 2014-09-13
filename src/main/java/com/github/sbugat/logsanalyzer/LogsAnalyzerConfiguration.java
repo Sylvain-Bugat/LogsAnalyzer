@@ -1,6 +1,7 @@
 package com.github.sbugat.logsanalyzer;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public class LogsAnalyzerConfiguration {
 	 * @param log first log and sample log of the group
 	 * @param fileName filename where the first log was read
 	 */
-	public void addNewUnknowGroup( final String newGroupName, final String log, final String fileName ) {
+	public void addNewUnknowGroup( final String newGroupName, final String log, final Path fileName ) {
 
 		final LogsGroup newLogsGroup = new LogsGroup( newGroupName , log, fileName );
 		logsGroups.add( newLogsGroup );

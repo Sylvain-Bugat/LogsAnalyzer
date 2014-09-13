@@ -1,5 +1,6 @@
 package com.github.sbugat.logsanalyzer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class LogsGroup {
 	 * @param newLogArg
 	 * @param fileName
 	 */
-	public LogsGroup( final String groupNameArg, final String newLogArg, final String fileName ) {
+	public LogsGroup( final String groupNameArg, final String newLogArg, final Path fileName ) {
 
 		groupName = groupNameArg;
 		sampleLog = newLogArg;
@@ -68,7 +69,7 @@ public class LogsGroup {
 	 * @param maxDistance maximum distance
 	 * @return if the log is added to the group
 	 */
-	public boolean compareAndAddLog( final String log, final String fileName, final int maxDistance ){
+	public boolean compareAndAddLog( final String log, final Path fileName, final int maxDistance ){
 
 		if( -1 != StringUtils.getLevenshteinDistance( log, sampleLog, maxDistance ) ) {
 
@@ -96,7 +97,7 @@ public class LogsGroup {
 	 * @param log
 	 * @param fileName
 	 */
-	private void addLog( final String log, final String fileName ){
+	private void addLog( final String log, final Path fileName ){
 		logs.add( fileName + "> " + log );
 	}
 
