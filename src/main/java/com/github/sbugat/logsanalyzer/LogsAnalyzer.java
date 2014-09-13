@@ -1,5 +1,6 @@
 package com.github.sbugat.logsanalyzer;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -61,38 +62,30 @@ public class LogsAnalyzer {
 	 * @param logFile file to analyze
 	 */
 	private void analyzeFile( final Path logFile ) {
-
-		try {
-
-			final List<String> lines = Files.readAllLines( logFile, StandardCharsets.UTF_8 );
+		try( final BufferedReader logReader = Files.newBufferedReader( logFile, StandardCharsets.ISO_8859_1 ) ) {
 			//Loop on the file lines
-			for( String line : lines ) {
-
+			String line = logReader.readLine();
+			while( null != line ){
 				boolean groupFound = false;
-
 				//Find the first configured group that is close enough to the line
 				for ( final LogsGroup logsGrp : logsAnalyzerConfiguration.getLogsGroups() ) {
-
 					if( logsGrp.compareAndAddLog( line, logFile, logsAnalyzerConfiguration.getDistance() ) ) {
-
 						groupFound = true;
 						break;
 					}
 				}
-
 				//If none was found, create a new one
 				if( ! groupFound ) {
-
 					//Create a new group of logs, with this line as the first log
 					logsAnalyzerConfiguration.addNewUnknowGroup( NEW_GROUP_NAME + unknowGroupNumber, line, logFile );
 					unknowGroupNumber ++;
 				}
+				line = logReader.readLine();
 			}
 		}
 		//Open or read error
 		catch( final IOException e ) {
-
-			System.out.println( "Error during " +  logFile + " file analysis: " + e );
+			System.out.println( "Error during " + logFile + " file analysis: " + e );
 			e.printStackTrace();
 		}
 	}
