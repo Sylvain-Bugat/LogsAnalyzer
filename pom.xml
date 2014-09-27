@@ -25,7 +25,7 @@
 		<commons.lang3.version>3.3.2</commons.lang3.version>
 
 		<!-- Maven Lifecycle Plugins Version -->
-		<maven.pluginclean.version>2.5</maven.pluginclean.version>
+		<maven.pluginclean.version>2.6</maven.pluginclean.version>
 		<maven.plugininstall.version>2.5.2</maven.plugininstall.version>
 		<maven.pluginsite.version>3.4</maven.pluginsite.version>
 		<maven.plugincompiler.version>3.1</maven.plugincompiler.version>
