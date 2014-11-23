@@ -35,6 +35,7 @@
 		<maven.pluginresources.version>2.7</maven.pluginresources.version>
 		<maven.plugindeploy.version>2.8.2</maven.plugindeploy.version>
 		<maven.pluginassembly.version>2.5.1</maven.pluginassembly.version>
+		<maven.pluginowasp.version>1.2.6</maven.pluginowasp.version>
 	</properties>
 
 	<dependencies>
@@ -158,7 +159,7 @@
 		</profile>
 
 		<profile>
-			<!-- Dependencies checker profile -->
+			<!-- Dependencies checker profile, use: mvn versions:display-plugin-updates versions:display-property-updates dependency-check:check -P dependencies.check,default -->
 			<id>dependencies.check</id>
 			<build>
 				<plugins>
@@ -167,8 +168,14 @@
 						<artifactId>versions-maven-plugin</artifactId>
 						<version>${maven.pluginversions.version}</version>
 						<configuration>
-							<rulesUri>file:./rules.xml</rulesUri>
+							<rulesUri>file:./dependencies-check-rules.xml</rulesUri>
 						</configuration>
+					</plugin>
+					<!-- OWASP dependencies check report-->
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${maven.pluginowasp.version}</version>
 					</plugin>
 				</plugins>
 			</build>
