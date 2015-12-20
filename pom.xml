@@ -22,7 +22,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 
 		<!-- Apache commons Version -->
-		<commons.lang3.version>3.3.2</commons.lang3.version>
+		<commons.lang3.version>3.4</commons.lang3.version>
 
 		<!-- Maven Lifecycle Plugins Version -->
 		<maven.pluginclean.version>3.0.0</maven.pluginclean.version>
