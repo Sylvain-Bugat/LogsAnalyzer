@@ -161,6 +161,9 @@
 		<profile>
 			<!-- Dependencies checker profile, use: mvn versions:display-plugin-updates versions:display-property-updates dependency-check:check -P dependencies.check,default -->
 			<id>dependencies.check</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
